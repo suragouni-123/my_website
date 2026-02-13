@@ -1,0 +1,57 @@
+name: Manual Rollback to GitHub Pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      rollback_steps:
+        description: Number of last deploy commits to revert (ignored if commit_sha is provided)
+        required: false
+        default: '1'
+      commit_sha:
+        description: Specific gh-pages commit SHA to revert to (optional)
+        required: false
+        default: ''
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout gh-pages branch (full history)
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Perform rollback
+        run: |
+          if [ -n "${{ github.event.inputs.commit_sha }}" ]; then
+            # Rollback to a specific commit SHA
+            echo "Rolling back to commit ${{ github.event.inputs.commit_sha }}..."
+            git revert --no-edit ${{ github.event.inputs.commit_sha }}
+          else
+            # Rollback last N commits
+            steps="${{ github.event.inputs.rollback_steps }}"
+            if ! [[ "$steps" =~ ^[0-9]+$ ]] || [ "$steps" -lt 1 ]; then
+              steps=1
+            fi
+
+            echo "Rolling back last $steps commit(s)..."
+
+            commits=$(git rev-list -n $steps HEAD)
+            for commit in $commits; do
+              echo "Reverting commit $commit..."
+              git revert --no-edit $commit
+            done
+          fi
+
+          # Push the new revert commits to gh-pages
+          git push origin gh-pages
+
+      - name: Show recent commits
+        run: git log --oneline -n 5
