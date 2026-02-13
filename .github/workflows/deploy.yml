@@ -18,8 +18,8 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      # 2️⃣ Prepare site folder
-      - name: Prepare site assets
+      # 2️⃣ Prepare tests folder
+      - name: Prepare tests assets
         run: |
           mkdir -p tests       # ensure folder exists
           touch tests/.nojekyll # prevents Jekyll build
