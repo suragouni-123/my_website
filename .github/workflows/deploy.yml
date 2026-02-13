@@ -22,13 +22,13 @@ jobs:
       - name: Prepare site assets
         run: |
           mkdir -p tests       # ensure folder exists
-          touch site/.nojekyll # prevents Jekyll build
+          touch tests/.nojekyll # prevents Jekyll build
 
       # 3️⃣ Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          publish_dir: ./site       # folder containing website
+          publish_dir: ./tests       # folder containing website
           publish_branch: gh-pages  # target branch for GitHub Pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
           allow_empty_commit: true
