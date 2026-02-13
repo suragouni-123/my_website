@@ -21,7 +21,7 @@ jobs:
       # 2️⃣ Prepare site folder
       - name: Prepare site assets
         run: |
-          mkdir -p site        # ensure folder exists
+          mkdir -p tests       # ensure folder exists
           touch site/.nojekyll # prevents Jekyll build
 
       # 3️⃣ Deploy to GitHub Pages
